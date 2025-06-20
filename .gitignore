@@ -1,0 +1,6 @@
+# Ignore sensitive configuration
+/config.ini
+**/config.ini
+# Ignore macOS Finder files
+**/.DS_Store
+*.DS_store
