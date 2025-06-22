@@ -5,7 +5,7 @@ from datetime import datetime
 import mariadb
 from iracingdataapi.client import irDataClient
 
-from utils import format_session_time, sr_convert, time_convert
+from ir_utils import format_session_time, sr_convert, time_convert
 
 
 def fetch_lap_data(
