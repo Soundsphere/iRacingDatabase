@@ -121,6 +121,7 @@ for i in recentraces['races']:
         print(f"Season Year: {i['season_year']}")
         print(f"Season: {i['season_quarter']}")
         print(f"Race Week: {i['race_week_num']}")
+        print(f"Team Race: {is_teamrace}")
         print()
 
 
