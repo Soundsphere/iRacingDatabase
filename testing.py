@@ -11,3 +11,9 @@ memId = cfg["iracingcreds"]["memberId"]
 db_host = cfg["databasecreds"]["host"]
 
 print(db_host)
+
+idc = irDataClient(username=user, password=pwd)
+
+
+info=(idc.stats_member_recent_races(cust_id=memId))
+print(info)

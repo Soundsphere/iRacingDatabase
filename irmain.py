@@ -128,7 +128,7 @@ def main():
                 ir_gain = int(race["newi_rating"]) - int(race["oldi_rating"])
                 sr_gain = int(race["new_sub_level"]) - int(race["old_sub_level"])
 
-                session_time = format_session_time(race["start_time"])
+                session_time = format_session_time(race["session_start_time"])
 
                 values = (
                     subsession_id,
