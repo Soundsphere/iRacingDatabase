@@ -32,7 +32,7 @@ cur = conn.cursor()
 ## create the client
 idc = irDataClient(username=ir_user, password=ir_pwd)
 
-cur.execute('SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC')
+cur.execute('SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LIMIT 10')
 
 ## calculate laptimes from iRacing
 def time_convert(raw):
