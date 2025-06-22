@@ -2,7 +2,7 @@
 FIRST VERSION - STILL UNDER TESTING
 
 
-This script gets the latest data from the iRacing API, converts the values and stores it in a database
+This script gets the latest data from the iRacing API, converts the values and stores it in a database. It relies heavily on [iracingdataap by asondilworth56](https://github.com/jasondilworth56/iracingdataapi)
 
 To store the data use the following table: 
 
