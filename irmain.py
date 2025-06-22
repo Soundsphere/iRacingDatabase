@@ -28,7 +28,13 @@ def sr_convert(sr_number):
 
 
 def fetch_lap_data(subsession_id: int):
-        """Return qualifying and race lap data for the given subsession."""
+        """Return qualifying and race lap data for the given subsession.
+
+        The function also determines whether the session is a team race. If the
+        normal lookup using the member id fails, the except block fetches the
+        data using the team id and marks the session as a team race.
+        """
+        is_teamrace = False
         try:
                 qinfo = idc.result_lap_data(
                         subsession_id=subsession_id,
@@ -62,7 +68,8 @@ def fetch_lap_data(subsession_id: int):
                         simsession_number=0,
                         team_id=teamid_output,
                 )
-        return qinfo, rinfo
+                is_teamrace = True
+        return qinfo, rinfo, is_teamrace
 
 
 def best_lap(info):
@@ -86,7 +93,7 @@ for i in recentraces['races']:
         eachId = i['subsession_id']
         print(eachId)
 
-        qinfo, rinfo = fetch_lap_data(eachId)
+        qinfo, rinfo, is_teamrace = fetch_lap_data(eachId)
         qbest_time = best_lap(qinfo)
         rbest_time = best_lap(rinfo)
         iRgain = int(i['newi_rating']) - int(i['oldi_rating'])
@@ -121,7 +128,7 @@ for i in recentraces['races']:
         print(f"Season Year: {i['season_year']}")
         print(f"Season: {i['season_quarter']}")
         print(f"Race Week: {i['race_week_num']}")
-        print(f"Team Race: {is_teamrace}")
+        print(f"Team Race: {str(is_teamrace).lower()}")
         print()
 
 
