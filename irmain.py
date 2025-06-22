@@ -32,6 +32,8 @@ cur = conn.cursor()
 ## create the client
 idc = irDataClient(username=ir_user, password=ir_pwd)
 
+cur.execute('SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC')
+
 ## calculate laptimes from iRacing
 def time_convert(raw):
     # raw is in 1/10 000 of a second
@@ -192,8 +194,8 @@ for i in recentraces['races']:
                 i['series_name'],
                 car_name(i['car_id']),
                 i['track']['track_name'],
-                time_convert(qbest_time) if qbest_time else "0:00.000",
-                time_convert(rbest_time) if rbest_time else "0:00.000",
+                (qbest_time) if qbest_time else "0:00.000",
+                (rbest_time) if rbest_time else "0:00.000",
                 i['incidents'],
                 sr_convert(i['old_sub_level']),
                 sr_convert(i['new_sub_level']),
