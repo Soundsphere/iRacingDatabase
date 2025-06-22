@@ -36,6 +36,8 @@ cur.execute('SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LI
 existing_ids = [row[0] for row in cur.fetchall()]
 
 ## calculate laptimes from iRacing
+## this function is obsolete as the tracktimes are stored as ints in the database
+## laptimes will be converted externally, however, I'll keep this function for now
 def time_convert(raw):
     # raw is in 1/10 000 of a second
     ms_total = raw // 10                   # now in milliseconds
