@@ -1,6 +1,7 @@
 import mariadb
 import configparser
 from iracingdataapi.client import irDataClient
+from datetime import datetime
 
 ## get the login config from the config file
 cfg = configparser.ConfigParser()
@@ -42,6 +43,12 @@ def time_convert(raw):
 def sr_convert(sr_number):
         converted_sr = sr_number/100
         return converted_sr
+
+
+def format_session_time(raw_time: str) -> str:
+        """Convert an ISO formatted timestamp to ``YYYY-MM-DD HH:MM:SS``."""
+        dt = datetime.fromisoformat(raw_time.replace('Z', '+00:00'))
+        return dt.strftime('%Y-%m-%d %H:%M:%S')
 
 
 def fetch_lap_data(subsession_id: int):
@@ -134,7 +141,8 @@ for i in recentraces['races']:
         iRgain = int(i['newi_rating']) - int(i['oldi_rating'])
         srgain = int(i['new_sub_level']) - int(i['old_sub_level'])
         ## print everything
-        print(f"Date: {i['session_start_time']}")
+        session_time = format_session_time(i['session_start_time'])
+        print(f"Date: {session_time}")
         print(f"Subsession Id: {eachId}")
         print(f"Series Name: {i['series_name']}")
         print(f"Car: {car_name(i['car_id'])}")
@@ -180,7 +188,7 @@ for i in recentraces['races']:
             insert_stmt,
             (
                 eachId,
-                i['session_start_time'],
+                session_time,
                 i['series_name'],
                 car_name(i['car_id']),
                 i['track']['track_name'],
