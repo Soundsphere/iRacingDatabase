@@ -105,11 +105,11 @@ for i in recentraces['races']:
         print(f"Car: {car_name(i['car_id'])}")
         print(f"Track: {i['track']['track_name']}")
         if qbest_time is None:
-                print("No Qualifying Time Set")
+                print("0:00.000")
         else:
                 print(f"Quali Time: {time_convert(qbest_time)}")
         if rbest_time is None:
-                print("No valid lap in race")
+                print("0:0.000")
         else:
                 print(f"Race Time: {time_convert(rbest_time)}")
         print(f"Incidents {i['incidents']}")
