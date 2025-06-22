@@ -1,14 +1,31 @@
+import mariadb
 import configparser
 from iracingdataapi.client import irDataClient
 
 ## get the login config from the config file
 cfg = configparser.ConfigParser()
 cfg.read("config.ini")
-#iracing login data
+
+## iracing login data
 ir_user = cfg['iracingcreds']["user"]
 ir_pwd  = cfg['iracingcreds']["pass"]
 ir_memId = cfg['iracingcreds']['memberId']
 ir_drivername = cfg['iracingcreds']['d_name']
+
+## database login
+db_host = cfg['databasecreds']['host']
+db_user = cfg['databasecreds']['databseuser']
+db_pwd = cfg['databasecreds']['databasepasswd']
+db_database = cfg['databasecreds']['database']
+
+
+## connect to the database
+conn = mariadb.connect(
+    user=db_user,
+    password=db_pwd,
+    host=db_host,
+    database=db_database)
+cur = conn.cursor()
 
 
 ## create the client

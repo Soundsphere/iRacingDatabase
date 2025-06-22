@@ -1,3 +1,4 @@
+import mariadb
 import configparser
 from iracingdataapi.client import irDataClient
 #import ast
@@ -5,9 +6,9 @@ from iracingdataapi.client import irDataClient
 
 cfg = configparser.ConfigParser()
 cfg.read("config.ini")
-user = cfg['credentials']['user']
-pwd  = cfg['credentials']["pass"]
-memId = cfg['credentials']['memberId']
+user = cfg['iracingcreds']['user']
+pwd  = cfg['iracingcreds']["pass"]
+memId = cfg['iracingcreds']['memberId']
 
 db_host = cfg['databasecreds']['host']
 
