@@ -167,6 +167,48 @@ for i in recentraces['races']:
         print(f"Qualitime set by Teammate: {str(q_set_by_teammate).lower()}")
         print()
 
+        insert_stmt = """
+            INSERT INTO iRacing (
+                subsessionId, SessionDate, SeriesName, Car, Track,
+                QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain,
+                StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
+                Points, SoF, TeamRace, QualiSetByTeammate, SeasonWeek, SeasonNumber, SeasonYear
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+
+        cur.execute(
+            insert_stmt,
+            (
+                eachId,
+                i['session_start_time'],
+                i['series_name'],
+                car_name(i['car_id']),
+                i['track']['track_name'],
+                time_convert(qbest_time) if qbest_time else "0:00.000",
+                time_convert(rbest_time) if rbest_time else "0:00.000",
+                i['incidents'],
+                sr_convert(i['old_sub_level']),
+                sr_convert(i['new_sub_level']),
+                sr_convert(srgain),
+                i['start_position'],
+                i['finish_position'],
+                i['oldi_rating'],
+                i['newi_rating'],
+                iRgain,
+                i['laps'],
+                i['laps_led'],
+                i['points'],
+                i['strength_of_field'],
+                str(is_teamrace).lower(),
+                str(q_set_by_teammate).lower(),
+                i['race_week_num'],
+                i['season_quarter'],
+                i['season_year'],
+            ),
+        )
+
+conn.commit()
+
 
 ## put everything into a variable instead of printing it directly to the terminal. This will then be used to create the input query
 #while True:
