@@ -33,6 +33,7 @@ cur = conn.cursor()
 idc = irDataClient(username=ir_user, password=ir_pwd)
 
 cur.execute('SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LIMIT 10')
+existing_ids = [row[0] for row in cur.fetchall()]
 
 ## calculate laptimes from iRacing
 def time_convert(raw):
@@ -124,6 +125,8 @@ cars_by_id = {c['car_id']: c['car_name'] for c in cars}
 ## first version. Iterate of the past races as long as we can match a subsession id and output the data to terminal. 
 for i in recentraces['races']:
         eachId = i['subsession_id']
+        if eachId in existing_ids:
+                continue
         print(eachId)
 
         qinfo, rinfo, is_teamrace = fetch_lap_data(eachId)
