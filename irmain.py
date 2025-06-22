@@ -73,7 +73,14 @@ def fetch_lap_data(subsession_id: int):
 
 
 def best_lap(info):
-        return next((lap['lap_time'] for lap in info if lap['personal_best_lap']), None)
+        """Return the lap dict flagged as personal best.
+
+        The iRacing API marks the best lap in the lap data with the
+        ``personal_best_lap`` flag.  In order to determine who set the lap
+        we return the entire lap dictionary instead of only the lap time.
+        """
+
+        return next((lap for lap in info if lap['personal_best_lap']), None)
 
 
 ## get the car name from the Id
@@ -94,8 +101,19 @@ for i in recentraces['races']:
         print(eachId)
 
         qinfo, rinfo, is_teamrace = fetch_lap_data(eachId)
-        qbest_time = best_lap(qinfo)
-        rbest_time = best_lap(rinfo)
+
+        qbest_lap = best_lap(qinfo)
+        rbest_lap = best_lap(rinfo)
+
+        qbest_time = qbest_lap['lap_time'] if qbest_lap else None
+        rbest_time = rbest_lap['lap_time'] if rbest_lap else None
+
+        qbest_driver = qbest_lap.get('display_name') if qbest_lap else None
+        q_set_by_teammate = (
+                bool(is_teamrace)
+                and qbest_driver is not None
+                and qbest_driver != ir_drivername
+        )
         iRgain = int(i['newi_rating']) - int(i['oldi_rating'])
         srgain = int(i['new_sub_level']) - int(i['old_sub_level'])
         ## print everything
@@ -129,7 +147,7 @@ for i in recentraces['races']:
         print(f"Season: {i['season_quarter']}")
         print(f"Race Week: {i['race_week_num']}")
         print(f"Team Race: {str(is_teamrace).lower()}")
-        print(f"Qualitime set by Teammate: {q_set_by_teammate}")
+        print(f"Qualitime set by Teammate: {str(q_set_by_teammate).lower()}")
         print()
 
 
