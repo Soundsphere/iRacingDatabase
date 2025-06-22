@@ -1,8 +1,11 @@
 # iRacingDatabase
 ![iRacingLogo](https://s100.iracing.com/wp-content/uploads/2016/07/iRacing-Logo-White-Horizontal-R-1024x189.png "iRacingLogo")
 
-FIRST VERSION - STILL UNDER TESTING
+***
 
+## ⚠️FIRST VERSION - STILL UNDER DEVELOPMENT⚠️
+
+***
 
 This script gets the latest data from the iRacing API, converts the values and stores it in a database. It relies heavily on [iracingdataapi by asondilworth56](https://github.com/jasondilworth56/iracingdataapi)
 
@@ -38,3 +41,6 @@ CREATE TABLE `iRacing` (
   PRIMARY KEY (`subsessionId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 ```
+
+
+⚠️
