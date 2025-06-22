@@ -22,6 +22,10 @@ def time_convert(raw):
     mins, secs = divmod(secs, 60)          # split seconds into minutes
     return f"{mins}:{secs:02d}.{ms:03d}"
 
+def sr_convert(sr_number):
+        converted_sr = sr_number/100
+        return converted_sr
+
 
 def fetch_lap_data(subsession_id: int):
         """Return qualifying and race lap data for the given subsession."""
@@ -86,7 +90,7 @@ for i in recentraces['races']:
         qbest_time = best_lap(qinfo)
         rbest_time = best_lap(rinfo)
         iRgain = int(i['newi_rating']) - int(i['oldi_rating'])
-        SFgain = int(i['new_sub_level']) - int(i['old_sub_level'])
+        srgain = int(i['new_sub_level']) - int(i['old_sub_level'])
         ## print everything
         print(f"Date: {i['session_start_time']}")
         print(f"Subsession Id: {eachId}")
@@ -105,9 +109,9 @@ for i in recentraces['races']:
         print(f"Old iRating: {i['oldi_rating']}")
         print(f"New iRating: {i['newi_rating']}")
         print(f"iRating Gain: {iRgain}")
-        print(f"Old Safety Rating: {i['old_sub_level']}")
-        print(f"New Safety Rating: {i['new_sub_level']}")
-        print(f"Safety Rating Gain: {SFgain}")
+        print(f"Old Safety Rating: {sr_convert(i['old_sub_level'])}")
+        print(f"New Safety Rating: {sr_convert(i['new_sub_level'])}")
+        print(f"Safety Rating Gain: {sr_convert(srgain)}")
         print(f"Start Position: {i['start_position']}")
         print(f"Finish Position {i['finish_position']}")
         print(f"Laps: {i['laps']}")
