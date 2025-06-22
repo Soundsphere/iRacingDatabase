@@ -1,18 +1,39 @@
+import mariadb
 import configparser
 from iracingdataapi.client import irDataClient
+from datetime import datetime
 
 ## get the login config from the config file
 cfg = configparser.ConfigParser()
 cfg.read("config.ini")
-#iracing login data
+
+## iracing login data
 ir_user = cfg['iracingcreds']["user"]
 ir_pwd  = cfg['iracingcreds']["pass"]
 ir_memId = cfg['iracingcreds']['memberId']
 ir_drivername = cfg['iracingcreds']['d_name']
 
+## database login
+db_host = cfg['databasecreds']['host']
+db_user = cfg['databasecreds']['databseuser']
+db_pwd = cfg['databasecreds']['databasepasswd']
+db_database = cfg['databasecreds']['database']
+
+
+## connect to the database
+conn = mariadb.connect(
+    user=db_user,
+    password=db_pwd,
+    host=db_host,
+    database=db_database)
+cur = conn.cursor()
+
 
 ## create the client
 idc = irDataClient(username=ir_user, password=ir_pwd)
+
+cur.execute('SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LIMIT 10')
+existing_ids = [row[0] for row in cur.fetchall()]
 
 ## calculate laptimes from iRacing
 def time_convert(raw):
@@ -25,6 +46,12 @@ def time_convert(raw):
 def sr_convert(sr_number):
         converted_sr = sr_number/100
         return converted_sr
+
+
+def format_session_time(raw_time: str) -> str:
+        """Convert an ISO formatted timestamp to ``YYYY-MM-DD HH:MM:SS``."""
+        dt = datetime.fromisoformat(raw_time.replace('Z', '+00:00'))
+        return dt.strftime('%Y-%m-%d %H:%M:%S')
 
 
 def fetch_lap_data(subsession_id: int):
@@ -98,6 +125,8 @@ cars_by_id = {c['car_id']: c['car_name'] for c in cars}
 ## first version. Iterate of the past races as long as we can match a subsession id and output the data to terminal. 
 for i in recentraces['races']:
         eachId = i['subsession_id']
+        if eachId in existing_ids:
+                continue
         print(eachId)
 
         qinfo, rinfo, is_teamrace = fetch_lap_data(eachId)
@@ -117,7 +146,8 @@ for i in recentraces['races']:
         iRgain = int(i['newi_rating']) - int(i['oldi_rating'])
         srgain = int(i['new_sub_level']) - int(i['old_sub_level'])
         ## print everything
-        print(f"Date: {i['session_start_time']}")
+        session_time = format_session_time(i['session_start_time'])
+        print(f"Date: {session_time}")
         print(f"Subsession Id: {eachId}")
         print(f"Series Name: {i['series_name']}")
         print(f"Car: {car_name(i['car_id'])}")
@@ -149,6 +179,48 @@ for i in recentraces['races']:
         print(f"Team Race: {str(is_teamrace).lower()}")
         print(f"Qualitime set by Teammate: {str(q_set_by_teammate).lower()}")
         print()
+
+        insert_stmt = """
+            INSERT INTO iRacing (
+                subsessionId, SessionDate, SeriesName, Car, Track,
+                QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain,
+                StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
+                Points, SoF, TeamRace, QualiSetByTeammate, SeasonWeek, SeasonNumber, SeasonYear
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+
+        cur.execute(
+            insert_stmt,
+            (
+                eachId,
+                session_time,
+                i['series_name'],
+                car_name(i['car_id']),
+                i['track']['track_name'],
+                (qbest_time) if qbest_time else "0:00.000",
+                (rbest_time) if rbest_time else "0:00.000",
+                i['incidents'],
+                sr_convert(i['old_sub_level']),
+                sr_convert(i['new_sub_level']),
+                sr_convert(srgain),
+                i['start_position'],
+                i['finish_position'],
+                i['oldi_rating'],
+                i['newi_rating'],
+                iRgain,
+                i['laps'],
+                i['laps_led'],
+                i['points'],
+                i['strength_of_field'],
+                str(is_teamrace).lower(),
+                str(q_set_by_teammate).lower(),
+                i['race_week_num'],
+                i['season_quarter'],
+                i['season_year'],
+            ),
+        )
+
+conn.commit()
 
 
 ## put everything into a variable instead of printing it directly to the terminal. This will then be used to create the input query
