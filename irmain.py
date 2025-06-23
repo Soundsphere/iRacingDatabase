@@ -125,6 +125,16 @@ def main():
                     and qbest_driver != ir_drivername
                 )
 
+                rbest_driver = rbest_lap.get("display_name") if rbest_lap else None
+                fastestteammate = (
+                    bool(is_teamrace)
+                    and rbest_lap is not None
+                    and rbest_lap.get("personal_best_lap")
+                    and rbest_lap.get("team_fastest_lap")
+                    and rbest_driver is not None
+                    and rbest_driver != ir_drivername
+                )
+
                 ir_gain = int(race["newi_rating"]) - int(race["oldi_rating"])
                 sr_gain = int(race["new_sub_level"]) - int(race["old_sub_level"])
 
