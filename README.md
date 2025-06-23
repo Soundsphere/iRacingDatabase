@@ -35,6 +35,7 @@ CREATE TABLE `iRacing` (
   `SoF` int(5) DEFAULT NULL,
   `TeamRace` char(5) DEFAULT NULL,
   `QualiSetByTeammate` char(5) DEFAULT NULL,
+  `FastestLapSetByTeammate` char(5) DEFAULT NULL,
   `SeasonWeek` int(2) DEFAULT NULL,
   `SeasonNumber` int(2) DEFAULT NULL,
   `SeasonYear` year(4) DEFAULT NULL,
