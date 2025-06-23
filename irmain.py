@@ -124,7 +124,7 @@ def main():
                     and qbest_driver is not None
                     and qbest_driver != ir_drivername
                 )
-
+                ## set personal fastest lap
                 rbest_driver = rbest_lap.get("display_name") if rbest_lap else None
                 fastestteammate = (
                     bool(is_teamrace)
