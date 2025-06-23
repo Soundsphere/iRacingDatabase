@@ -163,7 +163,7 @@ def main():
                     race["strength_of_field"],
                     str(is_teamrace).lower(),
                     str(q_set_by_teammate).lower(),
-                    tr(fastestteammate).lower(),
+                    str(fastestteammate).lower(),
                     race["race_week_num"],
                     race["season_quarter"],
                     race["season_year"],
