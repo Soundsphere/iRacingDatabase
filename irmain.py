@@ -99,7 +99,16 @@ def main():
                     subsessionId, SessionDate, SeriesName, Car, Track,
                     QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
-                    Points, SoF, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate, SeasonWeek, SeasonNumber, SeasonYear
+                if rbest_lap and (
+                    not is_teamrace
+                    or (
+                        rbest_lap.get("personal_best_lap")
+                        and rbest_lap.get("team_fastest_lap")
+                    )
+                ):
+                    rbest_time = rbest_lap["lap_time"]
+                else:
+                    rbest_time = None
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
