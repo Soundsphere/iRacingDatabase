@@ -138,7 +138,6 @@ def main():
                 fastestteammate = (
                     bool(is_teamrace)
                     and rbest_lap is not None
-                    and rbest_lap.get("personal_best_lap")
                     and rbest_lap.get("team_fastest_lap")
                     and rbest_driver is not None
                     and rbest_driver != ir_drivername
