@@ -113,7 +113,15 @@ def main():
                 )
 
                 qbest_lap = best_lap(qinfo)
-                rbest_lap = best_lap(rinfo)
+                rbest_lap = next(
+                    (
+                        lap
+                        for lap in rinfo
+                        if lap.get("display_name") == ir_drivername
+                        and lap.get("personal_best_lap")
+                    ),
+                    None,
+                )
 
                 qbest_time = qbest_lap["lap_time"] if qbest_lap else None
                 rbest_time = rbest_lap["lap_time"] if rbest_lap else None
