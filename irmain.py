@@ -99,8 +99,8 @@ def main():
                     subsessionId, SessionDate, SeriesName, Car, Track,
                     QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
-                    Points, SoF, TeamRace, QualiSetByTeammate, SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    Points, SoF, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate, SeasonWeek, SeasonNumber, SeasonYear
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -113,7 +113,15 @@ def main():
                 )
 
                 qbest_lap = best_lap(qinfo)
-                rbest_lap = best_lap(rinfo)
+                rbest_lap = next(
+                    (
+                        lap
+                        for lap in rinfo
+                        if lap.get("display_name") == ir_drivername
+                        and lap.get("personal_best_lap")
+                    ),
+                    None,
+                )
 
                 qbest_time = qbest_lap["lap_time"] if qbest_lap else None
                 rbest_time = rbest_lap["lap_time"] if rbest_lap else None
@@ -123,6 +131,16 @@ def main():
                     bool(is_teamrace)
                     and qbest_driver is not None
                     and qbest_driver != ir_drivername
+                )
+                ## set personal fastest lap
+                rbest_driver = rbest_lap.get("display_name") if rbest_lap else None
+                fastestteammate = (
+                    bool(is_teamrace)
+                    and rbest_lap is not None
+                    and rbest_lap.get("personal_best_lap")
+                    and rbest_lap.get("team_fastest_lap")
+                    and rbest_driver is not None
+                    and rbest_driver != ir_drivername
                 )
 
                 ir_gain = int(race["newi_rating"]) - int(race["oldi_rating"])
@@ -153,6 +171,7 @@ def main():
                     race["strength_of_field"],
                     str(is_teamrace).lower(),
                     str(q_set_by_teammate).lower(),
+                    str(fastestteammate).lower(),
                     race["race_week_num"],
                     race["season_quarter"],
                     race["season_year"],
