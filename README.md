@@ -1,9 +1,6 @@
-# iRacingDatabase
+# ⚠️FIRST VERSION - STILL UNDER DEVELOPMENT⚠️
+
 ![iRacingLogo](https://s100.iracing.com/wp-content/uploads/2016/07/iRacing-Logo-White-Horizontal-R-1024x189.png "iRacingLogo")
-
-***
-
-## ⚠️FIRST VERSION - STILL UNDER DEVELOPMENT⚠️
 
 ***
 
