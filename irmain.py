@@ -4,6 +4,7 @@ import mariadb
 from datetime import datetime
 from iracingdataapi.client import irDataClient
 from ir_utils import format_session_time, sr_convert, time_convert
+from ir_utils import licence_from_level
 
 
 def fetch_lap_data(
@@ -55,6 +56,22 @@ def fetch_lap_data(
 def best_lap(info):
     """Return the lap dictionary marked as the personal best."""
     return next((lap for lap in info if lap["personal_best_lap"]), None)
+
+
+def driver_new_licence(client: irDataClient, subsession_id: int, driver_name: str) -> str | None:
+    """Return the licence letter for the driver in a given subsession."""
+    result = client.result(subsession_id=subsession_id)
+    for session in result.get("session_results", []):
+        for entry in session.get("results", []):
+            drivers = entry.get("driver_results")
+            if drivers is None:
+                if entry.get("display_name") == driver_name:
+                    return licence_from_level(entry.get("new_license_level"))
+            else:
+                for driver in drivers:
+                    if driver.get("display_name") == driver_name:
+                        return licence_from_level(driver.get("new_license_level"))
+    return None
 
 
 def car_name(car_id: int, lookup: dict) -> str:
@@ -114,11 +131,11 @@ def main():
             insert_stmt = """
                 INSERT INTO iRacing (
                     subsessionId, SessionDate, SeriesName, Car, Track,
-                    QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain,
+                    QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
                     Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
                     SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -170,6 +187,7 @@ def main():
                 sr_gain = int(race["new_sub_level"]) - int(race["old_sub_level"])
 
                 session_time = format_session_time(race["session_start_time"])
+                licence = driver_new_licence(client, subsession_id, ir_drivername)
 
                 values = (
                     subsession_id,
@@ -183,6 +201,7 @@ def main():
                     sr_convert(race["old_sub_level"]),
                     sr_convert(race["new_sub_level"]),
                     sr_convert(sr_gain),
+                    licence,
                     race["start_position"],
                     race["finish_position"],
                     race["oldi_rating"],
