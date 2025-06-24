@@ -1,6 +1,8 @@
 from datetime import datetime
 
 
+## this isn't used as we save the laptime as we get it from the api and do the conversions externally
+## however, we keep it in for now so it can be used later if needed
 def time_convert(raw: int) -> str:
     """Convert lap time from 1/10000 seconds to ``M:SS.mmm`` format."""
     ms_total = raw // 10
