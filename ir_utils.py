@@ -16,6 +16,14 @@ def sr_convert(sr_number: int) -> float:
     return sr_number / 100
 
 
+def licence_from_level(level: int | None) -> str | None:
+    """Return the licence letter for a numeric level."""
+    mapping = {20: "A", 14: "B"}
+    if level is None:
+        return None
+    return mapping.get(level)
+
+
 def format_session_time(raw_time: str) -> str:
     """Convert an ISO timestamp to ``YYYY-MM-DD HH:MM:SS``."""
     dt = datetime.fromisoformat(raw_time.replace("Z", "+00:00"))
