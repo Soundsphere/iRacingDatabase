@@ -116,7 +116,8 @@ def main():
                     subsessionId, SessionDate, SeriesName, Car, Track,
                     QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
-                    Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate, SeasonWeek, SeasonNumber, SeasonYear
+                    Points, SoF, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate, RaceType,
+                    SeasonWeek, SeasonNumber, SeasonYear
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
@@ -191,6 +192,7 @@ def main():
                     race["laps_led"],
                     race["points"],
                     race["strength_of_field"],
+                    race_type,
                     race["race_type"],
                     str(is_teamrace).lower(),
                     str(q_set_by_teammate).lower(),
