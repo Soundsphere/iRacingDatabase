@@ -56,19 +56,23 @@ def best_lap(info):
     return next((lap for lap in info if lap["personal_best_lap"]), None)
 
 
-def driver_new_licence(client: irDataClient, subsession_id: int, driver_name: str) -> str | None:
+def driver_new_licence(
+    client: irDataClient, subsession_id: int, driver_name: str
+) -> str | None:
     """Return the licence letter for the driver in a given subsession."""
     result = client.result(subsession_id=subsession_id)
-    for session in result.get("session_results", []):
-        for entry in session.get("results", []):
-            drivers = entry.get("driver_results")
-            if drivers is None:
-                if entry.get("display_name") == driver_name:
-                    return licence_from_level(entry.get("new_license_level"))
-            else:
-                for driver in drivers:
-                    if driver.get("display_name") == driver_name:
-                        return licence_from_level(driver.get("new_license_level"))
+    sessions = result.get("session_results", [])
+    if len(sessions) <= 2:
+        return None
+    for entry in sessions[2].get("results", []):
+        drivers = entry.get("driver_results")
+        if drivers is None:
+            if entry.get("display_name") == driver_name:
+                return licence_from_level(entry.get("new_license_level"))
+        else:
+            for driver in drivers:
+                if driver.get("display_name") == driver_name:
+                    return licence_from_level(driver.get("new_license_level"))
     return None
 
 
