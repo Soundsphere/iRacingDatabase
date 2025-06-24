@@ -9,6 +9,12 @@
 
 This script gets the latest data from the iRacing API, converts the values and stores it in a database. It relies heavily on [iracingdataapi by asondilworth56](https://github.com/jasondilworth56/iracingdataapi)
 
+***
+
+To log into iRacing and use the script, enter your credentials into the config_shared.ini and rename it to config.ini
+
+***
+
 To store the data use the following table: 
 
 ```
