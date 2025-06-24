@@ -3,9 +3,7 @@ import logging
 import mariadb
 from datetime import datetime
 from iracingdataapi.client import irDataClient
-from ir_utils import format_session_time, sr_convert, time_convert
-from ir_utils import licence_from_level
-
+from ir_utils import format_session_time, sr_convert, time_convert, licence_from_level
 
 def fetch_lap_data(
     subsession_id: int, client: irDataClient, member_id: str, driver_name: str
