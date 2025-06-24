@@ -123,15 +123,18 @@ def main():
                     None,
                 )
 
-                qbest_time = qbest_lap["lap_time"] if qbest_lap else None
-                rbest_time = rbest_lap["lap_time"] if rbest_lap else None
-
                 qbest_driver = qbest_lap.get("display_name") if qbest_lap else None
                 q_set_by_teammate = (
                     bool(is_teamrace)
                     and qbest_driver is not None
                     and qbest_driver != ir_drivername
                 )
+                if qbest_lap and not q_set_by_teammate:
+                    qbest_time = qbest_lap["lap_time"]
+                else:
+                    qbest_time = None
+
+                rbest_time = rbest_lap["lap_time"] if rbest_lap else None
                 ## set personal fastest lap
                 rbest_driver = rbest_lap.get("display_name") if rbest_lap else None
                 fastestteammate = (
