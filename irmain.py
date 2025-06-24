@@ -123,15 +123,18 @@ def main():
                     None,
                 )
 
-                qbest_time = qbest_lap["lap_time"] if qbest_lap else None
-                rbest_time = rbest_lap["lap_time"] if rbest_lap else None
-
                 qbest_driver = qbest_lap.get("display_name") if qbest_lap else None
                 q_set_by_teammate = (
                     bool(is_teamrace)
                     and qbest_driver is not None
                     and qbest_driver != ir_drivername
                 )
+                if qbest_lap and not q_set_by_teammate:
+                    qbest_time = qbest_lap["lap_time"]
+                else:
+                    qbest_time = None
+
+                rbest_time = rbest_lap["lap_time"] if rbest_lap else None
                 ## set personal fastest lap
                 rbest_driver = rbest_lap.get("display_name") if rbest_lap else None
                 fastestteammate = (
@@ -154,8 +157,8 @@ def main():
                     race["series_name"],
                     car_name(race["car_id"], cars_by_id),
                     race["track"]["track_name"],
-                    qbest_time if qbest_time else "0:00.000",
-                    rbest_time if rbest_time else "0:00.000",
+                    qbest_time if qbest_time else "0",
+                    rbest_time if rbest_time else "0",
                     race["incidents"],
                     sr_convert(race["old_sub_level"]),
                     sr_convert(race["new_sub_level"]),
