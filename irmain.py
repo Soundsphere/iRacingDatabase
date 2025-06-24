@@ -56,19 +56,36 @@ def best_lap(info):
     return next((lap for lap in info if lap["personal_best_lap"]), None)
 
 
-def driver_new_licence(client: irDataClient, subsession_id: int, driver_name: str) -> str | None:
+def _find_driver_result(result: dict, driver_name: str) -> dict | None:
+    """Return the result dictionary for the selected driver."""
+    sessions = result.get("session_results", [])
+    if len(sessions) <= 2:
+        return None
+    for entry in sessions[2].get("results", []):
+        drivers = entry.get("driver_results")
+        if drivers is None:
+            if entry.get("display_name") == driver_name:
+                return entry
+        else:
+            for driver in drivers:
+                if driver.get("display_name") == driver_name:
+                    return driver
+    return None
+
+
+def driver_new_licence(result: dict, driver_name: str) -> str | None:
     """Return the licence letter for the driver in a given subsession."""
-    result = client.result(subsession_id=subsession_id)
-    for session in result.get("session_results", []):
-        for entry in session.get("results", []):
-            drivers = entry.get("driver_results")
-            if drivers is None:
-                if entry.get("display_name") == driver_name:
-                    return licence_from_level(entry.get("new_license_level"))
-            else:
-                for driver in drivers:
-                    if driver.get("display_name") == driver_name:
-                        return licence_from_level(driver.get("new_license_level"))
+    driver = _find_driver_result(result, driver_name)
+    if driver is not None:
+        return licence_from_level(driver.get("new_license_level"))
+    return None
+
+
+def driver_average_lap(result: dict, driver_name: str) -> int | None:
+    """Return the average lap time for the selected driver."""
+    driver = _find_driver_result(result, driver_name)
+    if driver is not None:
+        return driver.get("average_lap")
     return None
 
 
@@ -129,11 +146,11 @@ def main():
             insert_stmt = """
                 INSERT INTO iRacing (
                     subsessionId, SessionDate, SeriesName, Car, Track,
-                    QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
+                    QualifyingTime, RaceTime, AverageLapTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
                     Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
                     SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -185,7 +202,9 @@ def main():
                 sr_gain = int(race["new_sub_level"]) - int(race["old_sub_level"])
 
                 session_time = format_session_time(race["session_start_time"])
-                licence = driver_new_licence(client, subsession_id, ir_drivername)
+                race_result = client.result(subsession_id=subsession_id)
+                licence = driver_new_licence(race_result, ir_drivername)
+                avg_lap_time = driver_average_lap(race_result, ir_drivername)
 
                 values = (
                     subsession_id,
@@ -195,6 +214,7 @@ def main():
                     race["track"]["track_name"],
                     qbest_time if qbest_time else "0",
                     rbest_time if rbest_time else "0",
+                    avg_lap_time if avg_lap_time is not None else "0",
                     race["incidents"],
                     sr_convert(race["old_sub_level"]),
                     sr_convert(race["new_sub_level"]),
