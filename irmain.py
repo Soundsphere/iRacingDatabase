@@ -1,10 +1,8 @@
 import configparser
 import logging
-from datetime import datetime
-
 import mariadb
+from datetime import datetime
 from iracingdataapi.client import irDataClient
-
 from ir_utils import format_session_time, sr_convert, time_convert
 
 
