@@ -62,6 +62,20 @@ def car_name(car_id: int, lookup: dict) -> str:
     return lookup.get(car_id, "No car with that ID.")
 
 
+def normalize_category(category: str | None) -> str | None:
+    """Map API category strings to human readable labels."""
+    mapping = {
+        "formula_car": "Formula Car",
+        "sports_car": "Sports Car",
+        "oval": "Oval",
+        "dirtoval": "Dirt Oval",
+        "dirtroad": "Dirt Road",
+    }
+    if category is None:
+        return None
+    return mapping.get(category, category)
+
+
 def main():
     logging.basicConfig(level=logging.INFO)
 
@@ -82,6 +96,11 @@ def main():
     recent_races = client.stats_member_recent_races(cust_id=ir_mem_id)
     cars = client.get_cars()
     cars_by_id = {c["car_id"]: c["car_name"] for c in cars}
+    car_categories = {
+        c["car_id"]: c.get("categories", [None])[0]
+        for c in cars
+        if c.get("car_id") is not None
+    }
 
     with mariadb.connect(
         user=db_user, password=db_pwd, host=db_host, database=db_database
@@ -97,14 +116,17 @@ def main():
                     subsessionId, SessionDate, SeriesName, Car, Track,
                     QualifyingTime, RaceTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
-                    Points, SoF, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate, SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
+                    SeasonWeek, SeasonNumber, SeasonYear
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
                 subsession_id = race["subsession_id"]
                 if subsession_id in existing_ids:
                     continue
+
+                race_type = normalize_category(car_categories.get(race["car_id"]))
 
                 qinfo, rinfo, is_teamrace = fetch_lap_data(
                     subsession_id, client, ir_mem_id, ir_drivername
@@ -170,6 +192,7 @@ def main():
                     race["laps_led"],
                     race["points"],
                     race["strength_of_field"],
+                    race_type,
                     str(is_teamrace).lower(),
                     str(q_set_by_teammate).lower(),
                     str(fastestteammate).lower(),
