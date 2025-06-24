@@ -77,16 +77,18 @@ def driver_average_lap(
 ) -> int | None:
     """Return the average lap time for the driver in a given subsession."""
     result = client.result(subsession_id=subsession_id)
-    for session in result.get("session_results", []):
-        for entry in session.get("results", []):
-            drivers = entry.get("driver_results")
-            if drivers is None:
-                if entry.get("display_name") == driver_name:
-                    return entry.get("average_lap")
-            else:
-                for driver in drivers:
-                    if driver.get("display_name") == driver_name:
-                        return driver.get("average_lap")
+    sessions = result.get("session_results", [])
+    if len(sessions) <= 2:
+        return None
+    for entry in sessions[2].get("results", []):
+        drivers = entry.get("driver_results")
+        if drivers is None:
+            if entry.get("display_name") == driver_name:
+                return entry.get("average_lap")
+        else:
+            for driver in drivers:
+                if driver.get("display_name") == driver_name:
+                    return driver.get("average_lap")
     return None
 
 
