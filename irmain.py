@@ -139,7 +139,7 @@ def main():
     ) as conn:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LIMIT 10"
+                "SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LIMIT 15"
             )
             existing_ids = [row[0] for row in cur.fetchall()]
 
