@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 ## this isn't used as we save the laptime as we get it from the api and do the conversions externally
@@ -25,6 +26,7 @@ def licence_from_level(level: int | None) -> str | None:
 
 
 def format_session_time(raw_time: str) -> str:
-    """Convert an ISO timestamp to ``YYYY-MM-DD HH:MM:SS``."""
+    """Convert an ISO timestamp to ``YYYY-MM-DD HH:MM:SS`` in Berlin time."""
     dt = datetime.fromisoformat(raw_time.replace("Z", "+00:00"))
-    return dt.strftime("%Y-%m-%d %H:%M:%S")
+    berlin_dt = dt.astimezone(ZoneInfo("Europe/Berlin"))
+    return berlin_dt.strftime("%Y-%m-%d %H:%M:%S")
