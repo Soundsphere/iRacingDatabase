@@ -16,6 +16,6 @@ idc = irDataClient(username=user, password=pwd)
 
 # info=(idc.stats_member_recent_races(cust_id=memId))
 # carcl=(idc.get_cars())
-licence = idc.result(subsession_id=77757428)
+licence = idc.result(subsession_id=77975381)
 
 print(licence)
