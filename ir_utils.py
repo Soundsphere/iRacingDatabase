@@ -19,7 +19,7 @@ def sr_convert(sr_number: int) -> float:
 
 def licence_from_level(level: int | None) -> str | None:
     """Return the licence letter for a numeric level."""
-    mapping = {20: "A", 19: "A", 18: "A", 14: "B"}
+    mapping = {20: "A", 19: "A", 18: "A", 17: "A", 15: "B", 14: "B", 13: "B", 10: "C", 9: "C", 6: "D"}
     if level is None:
         return None
     return mapping.get(level)
