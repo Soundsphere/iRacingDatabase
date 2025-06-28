@@ -25,7 +25,10 @@ def fetch_lap_data(
             simsession_number=0,
             cust_id=member_id,
         )
-    except Exception:
+    except Exception as exc:
+        logging.warning(
+            "Member lookup failed for subsession %s: %s", subsession_id, exc
+        )
         team_race = client.result(subsession_id=subsession_id)
         teamid_var = team_race["session_results"][2]
         teamid_output = next(
@@ -37,6 +40,7 @@ def fetch_lap_data(
             ),
             None,
         )
+        logging.info("Using team_id %s for subsession %s", teamid_output, subsession_id)
         qinfo = client.result_lap_data(
             subsession_id=subsession_id,
             simsession_number=-1,
@@ -111,6 +115,8 @@ def normalize_category(category: str | None) -> str | None:
 def main():
     logging.basicConfig(level=logging.INFO)
 
+    logging.info("Starting iRacing data pull")
+
     cfg = configparser.ConfigParser()
     cfg.read("config.ini")
 
@@ -124,9 +130,24 @@ def main():
     db_pwd = cfg["databasecreds"]["databasepasswd"]
     db_database = cfg["databasecreds"]["database"]
 
-    client = irDataClient(username=ir_user, password=ir_pwd)
-    recent_races = client.stats_member_recent_races(cust_id=ir_mem_id)
-    cars = client.get_cars()
+    try:
+        client = irDataClient(username=ir_user, password=ir_pwd)
+    except Exception as exc:
+        logging.error("Failed to create iRacing client: %s", exc)
+        return
+
+    try:
+        recent_races = client.stats_member_recent_races(cust_id=ir_mem_id)
+        logging.info("Fetched %d recent races", len(recent_races.get("races", [])))
+    except Exception as exc:
+        logging.error("Failed to fetch recent races: %s", exc)
+        return
+
+    try:
+        cars = client.get_cars()
+    except Exception as exc:
+        logging.error("Failed to fetch car list: %s", exc)
+        return
     cars_by_id = {c["car_id"]: c["car_name"] for c in cars}
     car_categories = {
         c["car_id"]: c.get("categories", [None])[0]
@@ -134,14 +155,22 @@ def main():
         if c.get("car_id") is not None
     }
 
-    with mariadb.connect(
-        user=db_user, password=db_pwd, host=db_host, database=db_database
-    ) as conn:
+    try:
+        conn = mariadb.connect(
+            user=db_user, password=db_pwd, host=db_host, database=db_database
+        )
+        logging.info("Connected to database %s on %s", db_database, db_host)
+    except mariadb.Error as exc:
+        logging.error("Database connection failed: %s", exc)
+        return
+
+    with conn:
         with conn.cursor() as cur:
             cur.execute(
                 "SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LIMIT 15"
             )
             existing_ids = [row[0] for row in cur.fetchall()]
+            logging.info("Found %d existing subsessions", len(existing_ids))
 
             insert_stmt = """
                 INSERT INTO iRacing (
@@ -156,7 +185,9 @@ def main():
             for race in recent_races["races"]:
                 subsession_id = race["subsession_id"]
                 if subsession_id in existing_ids:
+                    logging.info("Skipping existing subsession %s", subsession_id)
                     continue
+                logging.info("Processing subsession %s", subsession_id)
 
                 race_type = normalize_category(car_categories.get(race["car_id"]))
 
@@ -241,6 +272,7 @@ def main():
                 try:
                     cur.execute(insert_stmt, values)
                     conn.commit()
+                    logging.info("Inserted subsession %s", subsession_id)
                 except mariadb.Error as exc:
                     logging.error("Failed to insert session %s: %s", subsession_id, exc)
 
