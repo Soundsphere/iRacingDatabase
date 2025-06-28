@@ -6,5 +6,7 @@
 # Ignore macOS Finder files
 **/.DS_Store
 *.DS_store
-**__pychache__
-**/__pychache__
+**__pychache__/
+**/__pychache__/
+/__pycache__/
+__pycache__/
