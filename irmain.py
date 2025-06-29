@@ -9,7 +9,7 @@ import ast
 import os
 import sys
 
-# Set the working dir to the script’s folder
+# Set the working dir to the scripts folder
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.getcwd())
 
