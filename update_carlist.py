@@ -1,7 +1,7 @@
 import configparser
 import os
 import sys
-from iracingdataapi.client import irDataClient
+from irdata_client import irDataClient
 
 cfg = configparser.ConfigParser()
 cfg.read("config.ini")
