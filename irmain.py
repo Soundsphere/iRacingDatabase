@@ -4,6 +4,7 @@ import mariadb
 from datetime import datetime
 from iracingdataapi.client import irDataClient
 from ir_utils import format_session_time, sr_convert, time_convert, licence_from_level
+import ast
 ## make it work via cron
 import os
 import sys
@@ -152,13 +153,15 @@ def main():
         return
 
     try:
-        cars = client.get_cars()
+        with open("car_list.cfg", "r", encoding="utf-8") as f:
+            cars = ast.literal_eval(f.read())
+        logging.info("Loaded %d cars from car_list.cfg", len(cars))
     except Exception as exc:
-        logging.error("Failed to fetch car list: %s", exc)
+        logging.error("Failed to load car list: %s", exc)
         return
     cars_by_id = {c["car_id"]: c["car_name"] for c in cars}
     car_categories = {
-        c["car_id"]: c.get("categories", [None])[0]
+        c.get("car_id"): c.get("categories", [None])[0]
         for c in cars
         if c.get("car_id") is not None
     }
