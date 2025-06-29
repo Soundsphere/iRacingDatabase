@@ -1,5 +1,6 @@
 import configparser
 import os
+import sys
 from iracingdataapi.client import irDataClient
 
 cfg = configparser.ConfigParser()
@@ -13,6 +14,7 @@ memId = cfg["iracingcreds"]["memberId"]
 
 # Ensure the script works regardless of where it is called from
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.getcwd())
 
 idc = irDataClient(username=user, password=pwd)
 
