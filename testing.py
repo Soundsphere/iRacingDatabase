@@ -15,7 +15,9 @@ memId = cfg["iracingcreds"]["memberId"]
 idc = irDataClient(username=user, password=pwd)
 
 # info=(idc.stats_member_recent_races(cust_id=memId))
-# carcl=(idc.get_cars())
-licence = idc.result(subsession_id=78022806)
+carcl=(idc.get_cars())
+#licence = idc.result(subsession_id=78022806)
 
-print(licence)
+print(carcl)
+
+

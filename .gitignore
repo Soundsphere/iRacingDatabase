@@ -6,7 +6,11 @@
 # Ignore macOS Finder files
 **/.DS_Store
 *.DS_store
+# Ignore any pycache folder
 **__pychache__/
 **/__pychache__/
 /__pycache__/
 __pycache__/
+# Ignore testing.py
+**/testing.py
+**testing.py
