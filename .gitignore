@@ -12,6 +12,5 @@
 /__pycache__/
 __pycache__/
 # Ignore testing.py
-**/testing.py
+testing.py
 **testing.py
-/testing.py
