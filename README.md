@@ -8,7 +8,7 @@ This script gets the latest data from the iRacing API, converts the values and s
 
 ***
 
-To log into iRacing and use the script, enter your credentials into the config_shared.ini and rename it to config.ini
+To log into iRacing and use the script, enter your credentials and timezone into the config_shared.ini and rename it to config.ini
 
 ***
 

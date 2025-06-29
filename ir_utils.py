@@ -1,6 +1,11 @@
+import configparser
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+cfg = configparser.ConfigParser()
+cfg.read("config.ini")
+
+user_timezone = cfg["timezonesetting"]["tz_setting"]
 
 ## this isn't used as we save the laptime as we get it from the api and do the conversions externally
 ## however, we keep it in for now so it can be used later if needed
@@ -26,7 +31,7 @@ def licence_from_level(level: int | None) -> str | None:
 
 
 def format_session_time(raw_time: str) -> str:
-    """Convert an ISO timestamp to ``YYYY-MM-DD HH:MM:SS`` in Berlin time."""
+    """Convert an ISO timestamp to ``YYYY-MM-DD HH:MM:SS`` in user defined time."""
     dt = datetime.fromisoformat(raw_time.replace("Z", "+00:00"))
-    berlin_dt = dt.astimezone(ZoneInfo("Europe/Berlin"))
-    return berlin_dt.strftime("%Y-%m-%d %H:%M:%S")
+    tz_converted = dt.astimezone(ZoneInfo(user_timezone))
+    return tz_converted.strftime("%Y-%m-%d %H:%M:%S")
