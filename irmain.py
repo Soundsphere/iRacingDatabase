@@ -156,6 +156,16 @@ def main():
         with open("car_list.cfg", "r", encoding="utf-8") as f:
             cars = ast.literal_eval(f.read())
         logging.info("Loaded %d cars from car_list.cfg", len(cars))
+    except FileNotFoundError:
+        logging.info("car_list.cfg not found, fetching from API")
+        try:
+            cars = client.get_cars()
+            with open("car_list.cfg", "w", encoding="utf-8") as f:
+                f.write(str(cars))
+            logging.info("Fetched %d cars and saved to car_list.cfg", len(cars))
+        except Exception as exc:
+            logging.error("Failed to fetch car list: %s", exc)
+            return
     except Exception as exc:
         logging.error("Failed to load car list: %s", exc)
         return
