@@ -12,6 +12,11 @@ To log into iRacing and use the script, enter your credentials and timezone into
 
 ***
 
+Car information is stored locally for one less API call. On first run of irmain.py this file gets created, but since cars get added or updated with every season, 
+run update_carlist.py every now and then to keep this list up to date
+
+***
+
 To store the data use the following table: 
 
 ```
