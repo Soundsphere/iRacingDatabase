@@ -4,6 +4,14 @@ import mariadb
 from datetime import datetime
 from iracingdataapi.client import irDataClient
 from ir_utils import format_session_time, sr_convert, time_convert, licence_from_level
+## make it work via cron
+import os
+import sys
+
+# Set the working dir to the script’s folder
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.getcwd())
+
 
 def fetch_lap_data(
     subsession_id: int, client: irDataClient, member_id: str, driver_name: str
