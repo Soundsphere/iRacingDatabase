@@ -1,20 +1,16 @@
 import configparser
-import os
-import sys
-from irdata_client import irDataClient
+from pathlib import Path
+from iracingdataapi.client import irDataClient
 
 cfg = configparser.ConfigParser()
-cfg.read("config.ini")
+config_path = Path(__file__).resolve().parent / "config.ini"
+cfg.read(config_path)
 user = cfg["iracingcreds"]["user"]
 pwd = cfg["iracingcreds"]["pass"]
 memId = cfg["iracingcreds"]["memberId"]
 
 ## since the carlist updates every 3 months with new added cars,
 ## this needs to be run before every new season
-
-# Ensure the script works regardless of where it is called from
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(os.getcwd())
 
 idc = irDataClient(username=user, password=pwd)
 
