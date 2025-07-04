@@ -5,14 +5,7 @@ from datetime import datetime
 from iracingdataapi.client import irDataClient
 from ir_utils import format_session_time, sr_convert, time_convert, licence_from_level
 import ast
-## make it work via cron
-import os
-import sys
-
-# Set the working dir to the scripts folder
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(os.getcwd())
-
+from pathlib import Path
 
 def fetch_lap_data(
     subsession_id: int, client: irDataClient, member_id: str, driver_name: str
@@ -127,7 +120,8 @@ def main():
     logging.info("Starting iRacing data pull")
 
     cfg = configparser.ConfigParser()
-    cfg.read("config.ini")
+    config_path = Path(__file__).resolve().parent / "config.ini"
+    cfg.read(config_path)
 
     ir_user = cfg["iracingcreds"]["user"]
     ir_pwd = cfg["iracingcreds"]["pass"]

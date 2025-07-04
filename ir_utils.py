@@ -1,9 +1,11 @@
 import configparser
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from pathlib import Path
 
 cfg = configparser.ConfigParser()
-cfg.read("config.ini")
+config_path = Path(__file__).resolve().parent / "config.ini"
+cfg.read(config_path)
 
 user_timezone = cfg["timezonesetting"]["tz_setting"]
 
