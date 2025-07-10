@@ -1,6 +1,6 @@
 import configparser
 from pathlib import Path
-from iracingdataapi.client import irDataClient
+from irdata_client import irDataClient
 
 cfg = configparser.ConfigParser()
 config_path = Path(__file__).resolve().parent / "config.ini"
