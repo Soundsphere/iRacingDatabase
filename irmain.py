@@ -189,8 +189,7 @@ def main():
 
             insert_stmt = """
                 INSERT INTO iRacing (
-                    subsessionId, SessionDate, SeriesName, Car, Track,
-                    TrackConfiguration,
+                    subsessionId, SessionDate, SeriesName, Car, Track, TrackConfiguration,
                     QualifyingTime, RaceTime, AverageLapTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
                     Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
