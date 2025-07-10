@@ -189,12 +189,12 @@ def main():
 
             insert_stmt = """
                 INSERT INTO iRacing (
-                    subsessionId, SessionDate, SeriesName, Car, Track,
+                    subsessionId, SessionDate, SeriesName, Car, Track, TrackConfiguration,
                     QualifyingTime, RaceTime, AverageLapTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
                     Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
                     SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -251,6 +251,7 @@ def main():
                 race_result = client.result(subsession_id=subsession_id)
                 licence = driver_new_licence(race_result, ir_drivername)
                 avg_lap_time = driver_average_lap(race_result, ir_drivername)
+                track_config = race_result.get("track", {}).get("config_name")
 
                 values = (
                     subsession_id,
@@ -258,6 +259,7 @@ def main():
                     race["series_name"],
                     car_name(race["car_id"], cars_by_id),
                     race["track"]["track_name"],
+                    track_config,
                     qbest_time if qbest_time else "0",
                     rbest_time if rbest_time else "0",
                     avg_lap_time if avg_lap_time is not None else "0",
