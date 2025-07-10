@@ -2,7 +2,7 @@ import configparser
 import logging
 import mariadb
 from datetime import datetime
-from iracingdataapi.client import irDataClient
+from irdata_client import irDataClient
 from ir_utils import format_session_time, sr_convert, time_convert, licence_from_level
 import ast
 from pathlib import Path
