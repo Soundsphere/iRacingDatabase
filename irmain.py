@@ -189,12 +189,12 @@ def main():
 
             insert_stmt = """
                 INSERT INTO iRacing (
-                    subsessionId, SessionDate, SeriesName, Car, Track,
+                    subsessionId, SessionDate, SeriesName, Car, Track, TrackConfiguration,
                     QualifyingTime, RaceTime, AverageLapTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
                     Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
                     SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -258,6 +258,7 @@ def main():
                     race["series_name"],
                     car_name(race["car_id"], cars_by_id),
                     race["track"]["track_name"],
+                    race["track"]["config_name"],
                     qbest_time if qbest_time else "0",
                     rbest_time if rbest_time else "0",
                     avg_lap_time if avg_lap_time is not None else "0",
