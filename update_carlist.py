@@ -19,7 +19,9 @@ memId = cfg["iracingcreds"]["memberId"]
 idc = irDataClient(username=user, password=pwd)
 
 existing_ids: set[int] = set()
-carlist_path = Path("car_list.cfg")
+# Always write the car list next to this script so cron jobs
+# don't place it in an unexpected directory
+carlist_path = Path(__file__).resolve().parent / "car_list.cfg"
 if carlist_path.exists():
     try:
         with carlist_path.open("r", encoding="utf-8") as f:
