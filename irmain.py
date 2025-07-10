@@ -182,7 +182,7 @@ def main():
     with conn:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LIMIT 15"
+                "SELECT SubsessionId FROM Stuff.iRacing ORDER BY SessionDate DESC LIMIT 12"
             )
             existing_ids = [row[0] for row in cur.fetchall()]
             logging.info("Found %d existing subsessions", len(existing_ids))
