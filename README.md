@@ -29,6 +29,7 @@ CREATE TABLE `iRacing` (
   `SeriesName` varchar(255) DEFAULT NULL,
   `Car` varchar(255) DEFAULT NULL,
   `Track` varchar(255) DEFAULT NULL,
+  `TrackConfiguration` varchar(255) DEFAULT NULL,
   `QualifyingTime` int(20) DEFAULT NULL,
   `RaceTime` int(20) DEFAULT NULL,
   `AverageLapTime` int(20) DEFAULT NULL,
