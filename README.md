@@ -7,7 +7,7 @@ I consider this already usable, though minor changes and stability upgrades will
 
 ***
 
-This script gets the latest data from the iRacing API, converts the values and stores it in a database. It relies heavily on [iracingdataapi by asondilworth56](https://github.com/jasondilworth56/iracingdataapi)
+This script gets the latest data from the iRacing API, converts the values and stores it in a database. It relies heavily on [iracingdataapi by asondilworth56](https://github.com/jasondilworth56/iracingdataapi) though the python package does not need to be installed as the funcionality needed for this is loaded direclty from irdata_client.py
 
 ***
 
