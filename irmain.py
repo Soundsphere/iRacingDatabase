@@ -99,7 +99,8 @@ def driver_dnf(result: dict, driver_name: str) -> bool:
     """Return True if the driver did not finish the race."""
     driver = _find_driver_result(result, driver_name)
     if driver is not None:
-        return driver.get("reason_out") != "Running"
+        reason = driver.get("reason_out") or ""
+        return reason.strip().lower() != "running"
     return False
 
 
