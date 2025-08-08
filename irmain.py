@@ -191,10 +191,10 @@ def main():
                 INSERT INTO iRacing (
                     subsessionId, SessionDate, SeriesName, Car, Track, TrackConfiguration,
                     QualifyingTime, RaceTime, AverageLapTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
-                    StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
+                    StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed, DnF,
                     Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
                     SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -251,6 +251,8 @@ def main():
                 race_result = client.result(subsession_id=subsession_id)
                 licence = driver_new_licence(race_result, ir_drivername)
                 avg_lap_time = driver_average_lap(race_result, ir_drivername)
+                driver_info = _find_driver_result(race_result, ir_drivername)
+                dnf = driver_info.get("reason_out") != "Running" if driver_info else False
                 track_config = race_result.get("track", {}).get("config_name")
 
                 values = (
@@ -275,6 +277,7 @@ def main():
                     ir_gain,
                     race["laps"],
                     race["laps_led"],
+                    str(dnf).lower(),
                     race["points"],
                     race["strength_of_field"],
                     race_type,
