@@ -62,7 +62,9 @@ def best_lap(info):
     return next((lap for lap in info if lap["personal_best_lap"]), None)
 
 
-def _find_driver_result(result: dict, driver_name: str) -> dict | None:
+def _find_driver_result(
+    result: dict, driver_name: str, member_id: str | None = None
+) -> dict | None:
     """Return the result dictionary for the selected driver."""
     sessions = result.get("session_results", [])
     if len(sessions) <= 2:
@@ -70,26 +72,34 @@ def _find_driver_result(result: dict, driver_name: str) -> dict | None:
     for entry in sessions[2].get("results", []):
         drivers = entry.get("driver_results")
         if drivers is None:
-            if entry.get("display_name") == driver_name:
+            if (member_id and str(entry.get("cust_id")) == str(member_id)) or (
+                entry.get("display_name") == driver_name
+            ):
                 return entry
         else:
             for driver in drivers:
-                if driver.get("display_name") == driver_name:
+                if (member_id and str(driver.get("cust_id")) == str(member_id)) or (
+                    driver.get("display_name") == driver_name
+                ):
                     return driver
     return None
 
 
-def driver_new_licence(result: dict, driver_name: str) -> str | None:
+def driver_new_licence(
+    result: dict, driver_name: str, member_id: str
+) -> str | None:
     """Return the licence letter for the driver in a given subsession."""
-    driver = _find_driver_result(result, driver_name)
+    driver = _find_driver_result(result, driver_name, member_id)
     if driver is not None:
         return licence_from_level(driver.get("new_license_level"))
     return None
 
 
-def driver_average_lap(result: dict, driver_name: str) -> int | None:
+def driver_average_lap(
+    result: dict, driver_name: str, member_id: str
+) -> int | None:
     """Return the average lap time for the selected driver."""
-    driver = _find_driver_result(result, driver_name)
+    driver = _find_driver_result(result, driver_name, member_id)
     if driver is not None:
         return driver.get("average_lap")
     return None
@@ -249,10 +259,14 @@ def main():
 
                 session_time = format_session_time(race["session_start_time"])
                 race_result = client.result(subsession_id=subsession_id)
-                licence = driver_new_licence(race_result, ir_drivername)
-                avg_lap_time = driver_average_lap(race_result, ir_drivername)
-                driver_info = _find_driver_result(race_result, ir_drivername)
-                dnf = driver_info.get("reason_out") != "Running" if driver_info else False
+                licence = driver_new_licence(race_result, ir_drivername, ir_mem_id)
+                avg_lap_time = driver_average_lap(race_result, ir_drivername, ir_mem_id)
+                driver_info = _find_driver_result(race_result, ir_drivername, ir_mem_id)
+                dnf = (
+                    driver_info.get("reason_out") not in (None, "", "Running")
+                    if driver_info
+                    else False
+                )
                 track_config = race_result.get("track", {}).get("config_name")
 
                 values = (
