@@ -105,6 +105,16 @@ def driver_average_lap(
     return None
 
 
+def driver_reason_out(
+    result: dict, driver_name: str, member_id: str
+) -> str | None:
+    """Return the reason a driver left the race."""
+    driver = _find_driver_result(result, driver_name, member_id)
+    if driver is not None:
+        return driver.get("reason_out")
+    return None
+
+
 def car_name(car_id: int, lookup: dict) -> str:
     """Return the car name for the given id."""
     return lookup.get(car_id, "No car with that ID.")
@@ -260,13 +270,13 @@ def main():
                 session_time = format_session_time(race["session_start_time"])
                 race_result = client.result(subsession_id=subsession_id)
                 licence = driver_new_licence(race_result, ir_drivername, ir_mem_id)
-                avg_lap_time = driver_average_lap(race_result, ir_drivername, ir_mem_id)
-                driver_info = _find_driver_result(race_result, ir_drivername, ir_mem_id)
-                dnf = (
-                    driver_info.get("reason_out") not in (None, "", "Running")
-                    if driver_info
-                    else False
+                avg_lap_time = driver_average_lap(
+                    race_result, ir_drivername, ir_mem_id
                 )
+                reason_out = driver_reason_out(
+                    race_result, ir_drivername, ir_mem_id
+                )
+                dnf = reason_out not in (None, "", "Running")
                 track_config = race_result.get("track", {}).get("config_name")
 
                 values = (
