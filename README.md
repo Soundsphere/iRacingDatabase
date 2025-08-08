@@ -47,6 +47,7 @@ CREATE TABLE `iRacing` (
   `LapsLed` int(4) DEFAULT NULL,
   `Points` int(4) DEFAULT NULL,
   `SoF` int(5) DEFAULT NULL,
+  `DnF` char(5) DEFAULT NULL,
   `RaceType` varchar(25) DEFAULT NULL,
   `TeamRace` char(5) DEFAULT NULL,
   `QualiSetByTeammate` char(5) DEFAULT NULL,

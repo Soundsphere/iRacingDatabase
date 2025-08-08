@@ -95,6 +95,14 @@ def driver_average_lap(result: dict, driver_name: str) -> int | None:
     return None
 
 
+def driver_dnf(result: dict, driver_name: str) -> bool:
+    """Return True if the driver did not finish the race."""
+    driver = _find_driver_result(result, driver_name)
+    if driver is not None:
+        return driver.get("reason_out") != "Running"
+    return False
+
+
 def car_name(car_id: int, lookup: dict) -> str:
     """Return the car name for the given id."""
     return lookup.get(car_id, "No car with that ID.")
@@ -192,9 +200,9 @@ def main():
                     subsessionId, SessionDate, SeriesName, Car, Track, TrackConfiguration,
                     QualifyingTime, RaceTime, AverageLapTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
-                    Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
+                    Points, SoF, DnF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
                     SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -252,6 +260,7 @@ def main():
                 licence = driver_new_licence(race_result, ir_drivername)
                 avg_lap_time = driver_average_lap(race_result, ir_drivername)
                 track_config = race_result.get("track", {}).get("config_name")
+                dnf = driver_dnf(race_result, ir_drivername)
 
                 values = (
                     subsession_id,
@@ -277,6 +286,7 @@ def main():
                     race["laps_led"],
                     race["points"],
                     race["strength_of_field"],
+                    str(dnf).lower(),
                     race_type,
                     str(is_teamrace).lower(),
                     str(q_set_by_teammate).lower(),
