@@ -95,13 +95,10 @@ def driver_average_lap(result: dict, driver_name: str) -> int | None:
     return None
 
 
-def driver_dnf(result: dict, driver_name: str) -> bool:
+def driver_dnf(race: dict) -> bool:
     """Return True if the driver did not finish the race."""
-    driver = _find_driver_result(result, driver_name)
-    if driver is not None:
-        reason = driver.get("reason_out") or ""
-        return reason.strip().lower() != "running"
-    return False
+    reason = race.get("reason_out") or ""
+    return reason.strip().lower() != "running"
 
 
 def car_name(car_id: int, lookup: dict) -> str:
@@ -261,7 +258,7 @@ def main():
                 licence = driver_new_licence(race_result, ir_drivername)
                 avg_lap_time = driver_average_lap(race_result, ir_drivername)
                 track_config = race_result.get("track", {}).get("config_name")
-                dnf = driver_dnf(race_result, ir_drivername)
+                dnf = driver_dnf(race)
 
                 values = (
                     subsession_id,

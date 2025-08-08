@@ -59,5 +59,5 @@ CREATE TABLE `iRacing` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 ```
 
-The `DnF` column is set to `true` when the session results show a `reason_out`
-value other than `Running`; otherwise it is `false`.
+The `DnF` column is `false` only when `reason_out` is `Running`; for any other
+value it is `true`.
