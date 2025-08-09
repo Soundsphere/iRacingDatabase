@@ -64,18 +64,18 @@ def best_lap(info):
 
 def _find_driver_result(result: dict, driver_name: str) -> dict | None:
     """Return the result dictionary for the selected driver."""
-    sessions = result.get("session_results", [])
-    if len(sessions) <= 2:
-        return None
-    for entry in sessions[2].get("results", []):
-        drivers = entry.get("driver_results")
-        if drivers is None:
-            if entry.get("display_name") == driver_name:
-                return entry
-        else:
-            for driver in drivers:
-                if driver.get("display_name") == driver_name:
-                    return driver
+    for session in result.get("session_results", []):
+        if session.get("simsession_type") == 6:  # Race session
+            for entry in session.get("results", []):
+                drivers = entry.get("driver_results")
+                if drivers is None:
+                    if entry.get("display_name") == driver_name:
+                        return entry
+                else:
+                    for driver in drivers:
+                        if driver.get("display_name") == driver_name:
+                            return driver
+            break
     return None
 
 
