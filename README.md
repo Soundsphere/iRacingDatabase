@@ -1,4 +1,4 @@
-# ⚠️FIRST VERSION - STILL UNDER DEVELOPMENT⚠️
+# ⚠️ STILL UNDER DEVELOPMENT ⚠️
 
 I consider this already usable, though minor changes and stability upgrades will come in the future
 
