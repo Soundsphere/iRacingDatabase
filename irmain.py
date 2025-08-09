@@ -254,7 +254,12 @@ def main():
                 track_config = race_result.get("track", {}).get("config_name")
 
                 session_results = race_result.get("session_results", {})
-                race_session = session_results.get("1") or session_results.get(1) or {}
+                if isinstance(session_results, dict):
+                    race_session = session_results.get("1") or session_results.get(1) or {}
+                elif isinstance(session_results, list):
+                    race_session = session_results[2] if len(session_results) > 2 else {}
+                else:
+                    race_session = {}
                 results_list = race_session.get("results", [])
                 member_result = next(
                     (res for res in results_list if str(res.get("cust_id")) == str(ir_mem_id)),
