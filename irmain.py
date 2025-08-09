@@ -64,18 +64,18 @@ def best_lap(info):
 
 def _find_driver_result(result: dict, driver_name: str) -> dict | None:
     """Return the result dictionary for the selected driver."""
-    sessions = result.get("session_results", [])
-    if len(sessions) <= 2:
-        return None
-    for entry in sessions[2].get("results", []):
-        drivers = entry.get("driver_results")
-        if drivers is None:
-            if entry.get("display_name") == driver_name:
-                return entry
-        else:
-            for driver in drivers:
-                if driver.get("display_name") == driver_name:
-                    return driver
+    for session in result.get("session_results", []):
+        if session.get("simsession_type") == 6:  # Race session
+            for entry in session.get("results", []):
+                drivers = entry.get("driver_results")
+                if drivers is None:
+                    if entry.get("display_name") == driver_name:
+                        return entry
+                else:
+                    for driver in drivers:
+                        if driver.get("display_name") == driver_name:
+                            return driver
+            break
     return None
 
 
@@ -93,6 +93,14 @@ def driver_average_lap(result: dict, driver_name: str) -> int | None:
     if driver is not None:
         return driver.get("average_lap")
     return None
+
+
+def driver_dnf(result: dict, driver_name: str) -> bool:
+    """Return True if the driver did not finish the race."""
+    driver = _find_driver_result(result, driver_name)
+    if driver is not None:
+        return driver.get("reason_out") != "Running"
+    return False
 
 
 def car_name(car_id: int, lookup: dict) -> str:
@@ -192,9 +200,9 @@ def main():
                     subsessionId, SessionDate, SeriesName, Car, Track, TrackConfiguration,
                     QualifyingTime, RaceTime, AverageLapTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
-                    Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
+                    Points, SoF, RaceType, DnF, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
                     SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -252,6 +260,7 @@ def main():
                 licence = driver_new_licence(race_result, ir_drivername)
                 avg_lap_time = driver_average_lap(race_result, ir_drivername)
                 track_config = race_result.get("track", {}).get("config_name")
+                dnf = driver_dnf(race_result, ir_drivername)
 
                 values = (
                     subsession_id,
@@ -278,6 +287,7 @@ def main():
                     race["points"],
                     race["strength_of_field"],
                     race_type,
+                    str(dnf).lower(),
                     str(is_teamrace).lower(),
                     str(q_set_by_teammate).lower(),
                     str(fastestteammate).lower(),
