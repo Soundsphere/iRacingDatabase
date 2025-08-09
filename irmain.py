@@ -192,9 +192,9 @@ def main():
                     subsessionId, SessionDate, SeriesName, Car, Track, TrackConfiguration,
                     QualifyingTime, RaceTime, AverageLapTime, Incidents, OldSafetyRating, NewSafetyRating, SafetyRatingGain, Licence,
                     StartPosition, FinishPosition, OldiRating, NewiRating, iRatingGain, Laps, LapsLed,
-                    Points, SoF, RaceType, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
+                    Points, SoF, RaceType, DnF, TeamRace, QualiSetByTeammate, FastestLapSetByTeammate,
                     SeasonWeek, SeasonNumber, SeasonYear
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             for race in recent_races["races"]:
@@ -253,6 +253,16 @@ def main():
                 avg_lap_time = driver_average_lap(race_result, ir_drivername)
                 track_config = race_result.get("track", {}).get("config_name")
 
+                session_results = race_result.get("session_results", {})
+                race_session = session_results.get("1") or session_results.get(1) or {}
+                results_list = race_session.get("results", [])
+                member_result = next(
+                    (res for res in results_list if str(res.get("cust_id")) == str(ir_mem_id)),
+                    {},
+                )
+                reason_out = member_result.get("reason_out")
+                dnf = reason_out != "Running"
+
                 values = (
                     subsession_id,
                     session_time,
@@ -278,6 +288,7 @@ def main():
                     race["points"],
                     race["strength_of_field"],
                     race_type,
+                    str(dnf).lower(),
                     str(is_teamrace).lower(),
                     str(q_set_by_teammate).lower(),
                     str(fastestteammate).lower(),
