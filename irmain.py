@@ -114,8 +114,8 @@ def normalize_category(category: str | None) -> str | None:
         "formula_car": "Formula Car",
         "sports_car": "Sports Car",
         "oval": "Oval",
-        "dirtoval": "Dirt Oval",
-        "dirtroad": "Dirt Road",
+        "dirt_oval": "Dirt Oval",
+        "dirt_road": "Dirt Road",
     }
     if category is None:
         return None
