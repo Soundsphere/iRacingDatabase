@@ -1,8 +1,3 @@
-# ⚠️ STILL UNDER DEVELOPMENT ⚠️
-
-I consider this already usable, though minor changes and stability upgrades will come in the future
-
-
 ![iRacingLogo](https://s100.iracing.com/wp-content/uploads/2016/07/iRacing-Logo-White-Horizontal-R-1024x189.png "iRacingLogo")
 
 ***
